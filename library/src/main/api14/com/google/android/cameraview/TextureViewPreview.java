@@ -26,11 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 @TargetApi(14)
-class TextureViewPreview extends PreviewImpl {
+class TextureViewPreview extends PreviewImpl implements SurfaceTexture.OnFrameAvailableListener {
 
     private final TextureView mTextureView;
 
     private int mDisplayOrientation;
+    private float[] mSTMatrix = new float[16];
 
     TextureViewPreview(Context context, ViewGroup parent) {
         final View view = View.inflate(context, R.layout.texture_view, parent);
@@ -42,6 +43,7 @@ class TextureViewPreview extends PreviewImpl {
                 setSize(width, height);
                 configureTransform();
                 dispatchSurfaceChanged();
+//                mTextureView.getSurfaceTexture().setOnFrameAvailableListener(TextureViewPreview.this);
             }
 
             @Override
@@ -53,6 +55,7 @@ class TextureViewPreview extends PreviewImpl {
 
             @Override
             public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                surface.setOnFrameAvailableListener(null);
                 setSize(0, 0);
                 return true;
             }
@@ -140,4 +143,9 @@ class TextureViewPreview extends PreviewImpl {
         mTextureView.setTransform(matrix);
     }
 
+    @Override
+    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+        surfaceTexture.updateTexImage();
+        surfaceTexture.getTransformMatrix(mSTMatrix);
+    }
 }

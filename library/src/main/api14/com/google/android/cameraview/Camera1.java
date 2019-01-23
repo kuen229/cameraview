@@ -21,6 +21,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
 import android.support.v4.util.SparseArrayCompat;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.io.IOException;
@@ -93,6 +94,13 @@ class Camera1 extends CameraViewImpl {
         }
         mShowingPreview = true;
         mCamera.startPreview();
+        mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+//                Log.d("Camera","camera frame "+data.length);
+            }
+        });
+
         return true;
     }
 
@@ -392,11 +400,15 @@ class Camera1 extends CameraViewImpl {
      * @return Number of degrees required to rotate preview
      */
     private int calcDisplayOrientation(int screenOrientationDegrees) {
+        int cameraDisplayOrientation = 0;
         if (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            return (360 - (mCameraInfo.orientation + screenOrientationDegrees) % 360) % 360;
+            cameraDisplayOrientation =  (360 - (mCameraInfo.orientation + screenOrientationDegrees) % 360) % 360;
         } else {  // back-facing
-            return (mCameraInfo.orientation - screenOrientationDegrees + 360) % 360;
+            cameraDisplayOrientation = (mCameraInfo.orientation - screenOrientationDegrees + 360) % 360;
         }
+        Log.i("rotation-test", String.format("camera display orientation %d for front:%b camera orientation:%d screen orientation:%d", cameraDisplayOrientation, mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT, mCameraInfo.orientation, screenOrientationDegrees));
+        return cameraDisplayOrientation;
+
     }
 
     /**

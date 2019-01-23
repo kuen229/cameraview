@@ -17,6 +17,7 @@
 package com.google.android.cameraview;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.OrientationEventListener;
@@ -56,8 +57,10 @@ abstract class DisplayOrientationDetector {
                         mDisplay == null) {
                     return;
                 }
+                Log.d("rotation-test", "orientation "+orientation);
                 final int rotation = mDisplay.getRotation();
                 if (mLastKnownRotation != rotation) {
+                    Log.i("rotation-test", "orientation "+orientation+", display rotation "+rotation);
                     mLastKnownRotation = rotation;
                     dispatchOnDisplayOrientationChanged(DISPLAY_ORIENTATIONS.get(rotation));
                 }
